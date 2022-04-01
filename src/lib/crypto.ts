@@ -7,8 +7,8 @@ const encryptChunkSize = 1024 * 1024 * 4
 const decryptChunkSize = encryptChunkSize + 17
 
 export async function encryptFile(
-  file: File,
-): Promise<{ data: Uint8Array; key: Uint8Array }> {
+  file: Readonly<File>,
+): Promise<Readonly<{ data: Uint8Array; key: Uint8Array }>> {
   await _sodium.ready
   const sodium = _sodium
 
@@ -50,9 +50,9 @@ export async function encryptFile(
 }
 
 export async function decryptFile(
-  cipher: Uint8Array,
-  key: Uint8Array,
-): Promise<{ data: Uint8Array; contentType: string }> {
+  cipher: Readonly<Uint8Array>,
+  key: Readonly<Uint8Array>,
+): Promise<Readonly<{ data: Uint8Array; contentType: string }>> {
   await _sodium.ready
   const sodium = _sodium
 
@@ -89,21 +89,21 @@ export async function decryptFile(
   return { data: data.slice(0, dataSize), contentType }
 }
 
-export async function encode(data: Uint8Array): Promise<string> {
+export async function encode(data: Readonly<Uint8Array>): Promise<Readonly<string>> {
   await _sodium.ready
   const sodium = _sodium
 
   return sodium.to_base64(data)
 }
 
-export async function decode(s: string): Promise<Uint8Array> {
+export async function decode(s: Readonly<string>): Promise<Readonly<Uint8Array>> {
   await _sodium.ready
   const sodium = _sodium
 
   return sodium.from_base64(s)
 }
 
-export async function encodeLink(id: string, key: Uint8Array): Promise<string> {
+export async function encodeLink(id: Readonly<string>, key: Readonly<Uint8Array>): Promise<Readonly<string>> {
   await _sodium.ready
   const sodium = _sodium
 
@@ -115,8 +115,8 @@ export async function encodeLink(id: string, key: Uint8Array): Promise<string> {
 }
 
 export async function decodeLink(
-  link: string,
-): Promise<{ id: string; key: Uint8Array }> {
+  link: Readonly<string>,
+): Promise<Readonly<{ id: string; key: Uint8Array }>> {
   await _sodium.ready
   const sodium = _sodium
 

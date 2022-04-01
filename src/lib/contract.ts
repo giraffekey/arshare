@@ -1,9 +1,8 @@
 import * as ethers from "ethers"
-// import type { AbiItem } from "web3-utils"
 import { WebBundlr } from "@bundlr-network/client"
 import axios from "axios"
 import { decryptFile, decodeLink, encryptFile, encodeLink } from "./crypto"
-import contractJson from "../../build/contracts/Arshare.json"
+// import contractJson from "../../build/contracts/Arshare.json"
 
 declare global {
   interface Window {
@@ -13,7 +12,7 @@ declare global {
 
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-const contract = new ethers.Contract("address", contractJson.abi, provider)
+// const contract = new ethers.Contract("address", contractJson.abi, provider)
 
 let bundlr: WebBundlr = null
 
@@ -29,7 +28,9 @@ export async function connect() {
 
 connect()
 
-async function lazyFund(size: number) {
+async function lazyFund(size: Readonly<number>) {
+  if (bundlr === null) return
+
   const price = await bundlr.getPrice(size)
   const balance = await bundlr.getLoadedBalance()
 
@@ -38,7 +39,9 @@ async function lazyFund(size: number) {
   }
 }
 
-export async function uploadFile(file: File): Promise<string> {
+export async function uploadFile(file: Readonly<File>): Promise<Readonly<string>> {
+  if (bundlr === null) return
+
   const tags = [{ name: "Content-Type", value: "application/octet-stream" }]
   const { data, key } = await encryptFile(file)
   await lazyFund(data.length)
@@ -49,8 +52,8 @@ export async function uploadFile(file: File): Promise<string> {
 }
 
 export async function downloadFile(
-  link: string,
-): Promise<{ data: Uint8Array; contentType: string }> {
+  link: Readonly<string>,
+): Promise<Readonly<{ data: Uint8Array; contentType: string }>> {
   const { id, key } = await decodeLink(link)
   const res = await axios.get<Blob>(`https://arweave.net/${id}`, {
     responseType: "blob",
