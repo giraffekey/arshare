@@ -1,0 +1,5 @@
+/node_modules
+/build
+
+.mnemonic
+yarn-error.log
