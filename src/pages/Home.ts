@@ -2,7 +2,7 @@ import m from "mithril"
 import { uploadFile } from "../lib/contract"
 
 const Home = () => {
-  let links = <string[]>[]
+  const links = <string[]>[]
 
   return {
     view() {
@@ -15,10 +15,10 @@ const Home = () => {
             m.redraw()
           },
         }),
-        links.map((link) => [
-          m(m.route.Link, { href: `/file/${link}` }, link),
-          m("br"),
-        ]),
+        m("div",
+          { class: "uk-flex uk-flex-column" },
+          links.map((link) => m(m.route.Link, { class: "uk-link-text", href: `/file/${link}` }, link)),
+        ),
       ]
     },
   }

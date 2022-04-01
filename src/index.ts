@@ -1,7 +1,7 @@
 import m from "mithril"
 import Home from "./pages/Home"
 import FilePage from "./pages/File"
-import "./lib/contract"
+import "./styles/index.scss"
 
 const root = document.body
 
