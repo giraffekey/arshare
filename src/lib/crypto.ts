@@ -89,21 +89,28 @@ export async function decryptFile(
   return { data: data.slice(0, dataSize), contentType }
 }
 
-export async function encode(data: Readonly<Uint8Array>): Promise<Readonly<string>> {
+export async function encode(
+  data: Readonly<Uint8Array>,
+): Promise<Readonly<string>> {
   await _sodium.ready
   const sodium = _sodium
 
   return sodium.to_base64(data)
 }
 
-export async function decode(s: Readonly<string>): Promise<Readonly<Uint8Array>> {
+export async function decode(
+  s: Readonly<string>,
+): Promise<Readonly<Uint8Array>> {
   await _sodium.ready
   const sodium = _sodium
 
   return sodium.from_base64(s)
 }
 
-export async function encodeLink(id: Readonly<string>, key: Readonly<Uint8Array>): Promise<Readonly<string>> {
+export async function encodeLink(
+  id: Readonly<string>,
+  key: Readonly<Uint8Array>,
+): Promise<Readonly<string>> {
   await _sodium.ready
   const sodium = _sodium
 

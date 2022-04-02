@@ -1748,6 +1748,11 @@
   resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.2.tgz#fc25ad9943bcac11cceb8168db4f275e0e72e756"
   integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
 
+"@types/uikit@^3.3.2":
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/@types/uikit/-/uikit-3.3.2.tgz#8a1d279a46e4dd0c9dd74c5fd11a591f4f9eb223"
+  integrity sha512-Sa2d+Ari4S0IP7X3+Y+zhwu9nlhv07Jr3XQgeFVkvME3mGZQr8iTkifHCU3Jz4Z7c8/SQ8Ve0OFb0UAovnzb4Q==
+
 "@types/ws@^7.4.4":
   version "7.4.7"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.7.tgz#f7c390a36f7a0679aa69de2d501319f4f8d9b702"

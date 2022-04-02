@@ -1,5 +1,6 @@
 import m from "mithril"
 import type { Vnode } from "mithril"
+import Header from "../components/Header"
 import { downloadFile } from "../lib/contract"
 import { encode } from "../lib/crypto"
 
@@ -42,12 +43,15 @@ const FilePage = () => {
   return {
     view() {
       return [
-        url
-          ? [
-              m(DisplayFile, { url, type }),
-              m("a", { href: url, download: filename }, "Download"),
-            ]
-          : m("p", "Decrypting..."),
+        m(Header),
+        m("main", [
+          url
+            ? [
+                m(DisplayFile, { url, type }),
+                m("a", { href: url, download: filename }, "Download"),
+              ]
+            : m("p", "Decrypting..."),
+        ]),
       ]
     },
   }
