@@ -2,22 +2,40 @@ import m from "mithril"
 import type { Vnode } from "mithril"
 import Header from "../components/Header"
 import { downloadFile } from "../lib/contract"
-import { encode } from "../lib/crypto"
+import { bytesToString } from "../lib/crypto"
 
-const DisplayFile = (vnode: Vnode<{ url: string; type: string }>) => {
-  const { url, type } = vnode.attrs
+function createURL(data: Uint8Array, contentType: string): string {
+  return URL.createObjectURL(new Blob([data.buffer], { type: contentType }))
+}
+
+const DisplayFile = (
+  vnode: Vnode<{ data: Uint8Array; contentType: string }>,
+) => {
+  const { data, contentType } = vnode.attrs
 
   return {
     view() {
+      const [type, _ext] = contentType.split("/")
       switch (type) {
         case "image":
-          return m("img", { src: url })
+          return m("img", { src: createURL(data, contentType) })
         case "audio":
-          return m("audio", { src: url, controls: true })
+          return m("audio", {
+            src: createURL(data, contentType),
+            controls: true,
+          })
         case "video":
-          return m("video", { src: url, controls: true })
+          return m("video", {
+            src: createURL(data, contentType),
+            controls: true,
+          })
         default:
-          return m("")
+          switch (contentType) {
+            case "text/plain":
+              return m("textarea", { value: bytesToString(data) })
+            default:
+              return m(null)
+          }
       }
     },
   }
@@ -25,16 +43,15 @@ const DisplayFile = (vnode: Vnode<{ url: string; type: string }>) => {
 
 const FilePage = () => {
   const link = m.route.param("link")
-  let url: string = null
-  let type: string = null
+  let data: Uint8Array = null
+  let contentType: string = null
   let filename: string = null
 
   const download = async (link: string) => {
-    const { data, contentType } = await downloadFile(link)
-    url = URL.createObjectURL(new Blob([data.buffer], { type: contentType }))
-    const [type_, ext] = contentType.split("/")
-    type = type_
-    filename = `${link}.${ext}`
+    const file = await downloadFile(link)
+    data = file.data
+    contentType = file.contentType
+    filename = file.filename
     m.redraw()
   }
 
@@ -45,10 +62,14 @@ const FilePage = () => {
       return [
         m(Header),
         m("main", [
-          url
+          data
             ? [
-                m(DisplayFile, { url, type }),
-                m("a", { href: url, download: filename }, "Download"),
+                m(DisplayFile, { data, contentType }),
+                m(
+                  "a",
+                  { href: createURL(data, contentType), download: filename },
+                  `Download ${filename}`,
+                ),
               ]
             : m("p", "Decrypting..."),
         ]),

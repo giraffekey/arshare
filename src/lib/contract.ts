@@ -153,7 +153,7 @@ async function lazyFund(size: Readonly<number>) {
   const balance = await bundlr.getLoadedBalance()
 
   if (balance.isLessThan(price)) {
-    await bundlr.fund(price.minus(balance).multipliedBy(2))
+    await bundlr.fund(price)
   }
 }
 
@@ -171,7 +171,9 @@ export async function uploadFile(
 
 export async function downloadFile(
   link: Readonly<string>,
-): Promise<Readonly<{ data: Uint8Array; contentType: string }>> {
+): Promise<
+  Readonly<{ data: Uint8Array; contentType: string; filename: string }>
+> {
   const { id, key } = await decodeLink(link)
   const res = await axios.get<Blob>(`https://arweave.net/${id}`, {
     responseType: "blob",
