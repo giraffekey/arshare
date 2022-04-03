@@ -10,7 +10,7 @@ interface State {
 const State: State = {
   isConnectPending: false,
   account: null,
-  chainId: null,
+  chainId: 28,
   setConnectPending(isPending: Readonly<boolean>) {
     State.isConnectPending = isPending
   },
