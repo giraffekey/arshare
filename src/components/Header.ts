@@ -8,7 +8,7 @@ import {
   disconnect,
   switchNetwork,
   blockExplorerAccountURL,
-} from "../lib/contract"
+} from "../lib/network"
 // @ts-ignore
 import MetamaskIcon from "../assets/images/metamask.svg"
 

@@ -1,7 +1,7 @@
 import m from "mithril"
 import Header from "../components/Header"
 import state from "../state"
-import { uploadFile } from "../lib/contract"
+import { uploadFile } from "../lib/network"
 
 const Home = () => {
   const links = <string[]>[]

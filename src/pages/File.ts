@@ -1,7 +1,7 @@
 import m from "mithril"
 import type { Vnode } from "mithril"
 import Header from "../components/Header"
-import { downloadFile } from "../lib/contract"
+import { downloadFile } from "../lib/network"
 import { bytesToString } from "../lib/crypto"
 
 function createURL(data: Uint8Array, contentType: string): string {
