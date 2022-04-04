@@ -58,106 +58,33 @@ const blockExplorers = <{ [chainId: number]: string }>{
   28: "https://blockexplorer.rinkeby.boba.network",
 }
 
+const genChain = (
+  chainId: number,
+  chainName: string,
+  currencyName: string,
+  currencySymbol: string,
+): AddEthereumChainParameter => ({
+  chainId: ethers.utils.hexValue(chainId),
+  chainName,
+  nativeCurrency: {
+    name: currencyName,
+    symbol: currencySymbol,
+    decimals: 18,
+  },
+  rpcUrls: [rpcs[chainId]],
+  blockExplorerUrls: [blockExplorers[chainId]],
+})
+
 const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
-  1: {
-    chainId: ethers.utils.hexValue(1),
-    chainName: "Ethereum Mainnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[1]],
-    blockExplorerUrls: [blockExplorers[1]],
-  },
-  3: {
-    chainId: ethers.utils.hexValue(3),
-    chainName: "Ethereum Ropsten Testnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[3]],
-    blockExplorerUrls: [blockExplorers[3]],
-  },
-  4: {
-    chainId: ethers.utils.hexValue(4),
-    chainName: "Ethereum Rinkeby Testnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[4]],
-    blockExplorerUrls: [blockExplorers[4]],
-  },
-  5: {
-    chainId: ethers.utils.hexValue(5),
-    chainName: "Ethereum Goerli Testnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[5]],
-    blockExplorerUrls: [blockExplorers[5]],
-  },
-  42: {
-    chainId: ethers.utils.hexValue(42),
-    chainName: "Ethereum Kovan Testnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[42]],
-    blockExplorerUrls: [blockExplorers[42]],
-  },
-  137: {
-    chainId: ethers.utils.hexValue(137),
-    chainName: "Polygon Mainnet",
-    nativeCurrency: {
-      name: "Polygon",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[137]],
-    blockExplorerUrls: [blockExplorers[137]],
-  },
-  80001: {
-    chainId: ethers.utils.hexValue(80001),
-    chainName: "Polygon Mumbai Testnet",
-    nativeCurrency: {
-      name: "Polygon",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[80001]],
-    blockExplorerUrls: [blockExplorers[80001]],
-  },
-  288: {
-    chainId: ethers.utils.hexValue(288),
-    chainName: "Boba Mainnet",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[288]],
-    blockExplorerUrls: [blockExplorers[288]],
-  },
-  28: {
-    chainId: ethers.utils.hexValue(28),
-    chainName: "Boba Rinkeby",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: [rpcs[28]],
-    blockExplorerUrls: [blockExplorers[28]],
-  },
+  1: genChain(1, "Ethereum Mainnet", "Ethereum", "ETH"),
+  3: genChain(3, "Ethereum Ropsten Testnet", "Ethereum", "ETH"),
+  4: genChain(4, "Ethereum Rinkeby Testnet", "Ethereum", "ETH"),
+  5: genChain(5, "Ethereum Goerli Testnet", "Ethereum", "ETH"),
+  42: genChain(42, "Ethereum Kovan Testnet", "Ethereum", "ETH"),
+  137: genChain(137, "Polygon Mainnet", "Polygon", "MATIC"),
+  80001: genChain(80001, "Polygon Mumbai Testnet", "Polygon", "MATIC"),
+  288: genChain(288, "Boba Mainnet", "Ethereum", "ETH"),
+  28: genChain(28, "Boba Rinkeby Testnet", "Ethereum", "ETH"),
 }
 
 // Variables
