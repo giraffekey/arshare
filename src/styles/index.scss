@@ -7,3 +7,36 @@
 // Mixin overwrites
 
 @import "uikit/src/scss/uikit-theme.scss";
+
+// Utilities
+
+.uk-padding-medium-horizontal {
+	padding-left: $global-medium-gutter;
+	padding-right: $global-medium-gutter;
+}
+
+.uk-padding-small-vertical {
+	padding-top: $global-small-gutter;
+	padding-bottom: $global-small-gutter;
+}
+
+// Components
+
+.icon {
+	margin-right: calc($global-small-margin / 2);
+}
+
+.connect-button {
+	color: $global-primary-background;
+	border: 1px solid $global-primary-background;
+}
+
+.connect-button:hover {
+	color: darken($global-primary-background, 10);
+	border: 1px solid darken($global-primary-background, 10);
+}
+
+.connect-button:disabled {
+	color: lighten($global-primary-background, 10);
+	border: 1px solid lighten($global-primary-background, 10);
+}
