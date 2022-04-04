@@ -6,6 +6,35 @@ function validChainId(chainId: number): boolean {
   return [288, 28].includes(chainId)
 }
 
+const Search = () => {
+  let link = ""
+
+  return {
+    view() {
+      return m(
+        "form",
+        {
+          onsubmit(e: SubmitEvent) {
+            e.preventDefault()
+            m.route.set("/file/:link", { link })
+          },
+          class: "uk-search uk-search-default uk-flex-1 uk-margin-medium-left",
+        },
+        [
+          m("button", { "uk-search-icon": true }),
+          m("input[type=search]", {
+            oninput: (e: InputEvent) =>
+              (link = (e.target as HTMLInputElement).value),
+            class: "uk-search-input",
+            placeholder: "Search link...",
+            value: link,
+          }),
+        ],
+      )
+    },
+  }
+}
+
 const NetworkSelect = {
   view() {
     return m(
@@ -18,7 +47,7 @@ const NetworkSelect = {
             switchNetwork(chainId)
           }
         },
-        class: "uk-select uk-form-width-medium uk-margin-medium-right uk-margin-auto-left",
+        class: "uk-select uk-form-width-medium uk-margin-medium-left",
         value: validChainId(state.chainId) ? state.chainId : "",
       },
       [
@@ -31,65 +60,91 @@ const NetworkSelect = {
         m("option", { value: 28 }, "Boba Rinkeby"),
       ],
     )
-  }
+  },
 }
 
 const ConnectButton = {
   view() {
-    return m("button",
-        {
-          onclick: connect,
-          class: "connect-button uk-button uk-button-default uk-text-bold uk-text-capitalize uk-text-nowrap",
-          disabled: state.isConnectPending,
-        },
-        state.isConnectPending
-          ? [
+    return m(
+      "button",
+      {
+        onclick: connect,
+        class:
+          "connect-button uk-button uk-button-default uk-margin-medium-left uk-text-bold uk-text-capitalize uk-text-nowrap",
+        disabled: state.isConnectPending,
+      },
+      state.isConnectPending
+        ? [
             m("span", { "uk-icon": "icon: clock", class: "icon" }),
-            m("span",  "Connecting..."),
+            m("span", "Connecting..."),
           ]
-          : [
+        : [
             m("span", { "uk-icon": "icon: sign-in", class: "icon" }),
-            m("span",  "Connect Wallet"),
-          ]
-      )
-  }
+            m("span", "Connect Wallet"),
+          ],
+    )
+  },
 }
 
 const AccountDropdown = {
   view() {
     return [
-      m("button", { class: "uk-button uk-button-default uk-text-capitalize uk-text-nowrap" }, [
-        m("span", state.account),
-        m("span", { "uk-icon": "icon: triangle-down" }),
-      ]),
+      m(
+        "button",
+        {
+          class:
+            "uk-button uk-button-default uk-margin-medium-left uk-text-capitalize uk-text-nowrap",
+        },
+        [
+          m("span", state.account),
+          m("span", { "uk-icon": "icon: triangle-down" }),
+        ],
+      ),
       m(
         "div",
         { "uk-dropdown": "mode: click; pos: top-right" },
         m("ul", { class: "uk-nav uk-dropdown-nav" }, [
-          m("li", m("button", { onclick: disconnect, class: "uk-button uk-text-capitalize" }, [
-            m("span", { "uk-icon": "icon: sign-out", class: "icon" }),
-            m("span", "Disconnect"),
-          ])),
+          m(
+            "li",
+            m(
+              "button",
+              { onclick: disconnect, class: "uk-button uk-text-capitalize" },
+              [
+                m("span", { "uk-icon": "icon: sign-out", class: "icon" }),
+                m("span", "Disconnect"),
+              ],
+            ),
+          ),
         ]),
       ),
     ]
-  }
+  },
 }
 
 const Header = () => {
   return {
     view() {
-      return m("header", { class: "uk-flex uk-flex-between uk-flex-middle uk-padding-medium-horizontal uk-padding-small-vertical" }, [
-        m(
-          "h1",
-          { class: "uk-block uk-margin-remove uk-text-large" },
-          m(m.route.Link, { class: "uk-link-text uk-text-decoration-none", href: "/" }, "Arshare"),
-        ),
-        m(NetworkSelect),
-        state.account
-          ? m(AccountDropdown)
-          : m(ConnectButton),
-      ])
+      return m(
+        "header",
+        {
+          class:
+            "uk-flex uk-flex-between uk-flex-middle uk-padding-medium-horizontal uk-padding-small-vertical",
+        },
+        [
+          m(
+            "h1",
+            { class: "uk-block uk-margin-remove uk-text-large" },
+            m(
+              m.route.Link,
+              { class: "uk-link-text uk-text-decoration-none", href: "/" },
+              "Arshare",
+            ),
+          ),
+          m(Search),
+          m(NetworkSelect),
+          state.account ? m(AccountDropdown) : m(ConnectButton),
+        ],
+      )
     },
   }
 }
