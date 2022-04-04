@@ -20,10 +20,27 @@
   padding-bottom: $global-small-gutter;
 }
 
+.uk-margin-xsmall-left {
+  margin-left: calc($global-small-margin / 2);
+}
+
+.uk-margin-xsmall-right {
+  margin-right: calc($global-small-margin / 2);
+}
+
+.uk-margin-xsmall-top {
+  margin-top: calc($global-small-margin / 2);
+}
+
+.uk-margin-xsmall-bottom {
+  margin-bottom: calc($global-small-margin / 2);
+}
+
 // Components
 
-.icon {
-  margin-right: calc($global-small-margin / 2);
+.image-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .connect-button {

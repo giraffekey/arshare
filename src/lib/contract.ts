@@ -34,6 +34,16 @@ interface AddEthereumChainParameter {
 
 // Constants
 
+const rpcs = <{ [chainId: number]: string }>{
+  288: "https://mainnet.boba.network",
+  28: "https://rinkeby.boba.network",
+}
+
+const blockExplorers = <{ [chainId: number]: string }>{
+  288: "https://blockexplorer.boba.network",
+  28: "https://blockexplorer.rinkeby.boba.network",
+}
+
 const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
   288: {
     chainId: ethers.utils.hexValue(288),
@@ -43,8 +53,8 @@ const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://mainnet.boba.network"],
-    blockExplorerUrls: ["https://blockexplorer.boba.network"],
+    rpcUrls: [rpcs[288]],
+    blockExplorerUrls: [blockExplorers[288]],
   },
   28: {
     chainId: ethers.utils.hexValue(28),
@@ -54,8 +64,8 @@ const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://rinkeby.boba.network"],
-    blockExplorerUrls: ["https://blockexplorer.rinkeby.boba.network"],
+    rpcUrls: [rpcs[28]],
+    blockExplorerUrls: [blockExplorers[28]],
   },
 }
 
@@ -69,9 +79,7 @@ const bundlr: WebBundlr = new WebBundlr(
   "https://devnet.bundlr.network",
   "boba",
   provider,
-  {
-    providerUrl: "https://rinkeby.boba.network",
-  },
+  { providerUrl: rpcs[28] },
 )
 
 if (window.ethereum.isConnected())
@@ -126,6 +134,14 @@ provider.on("network", handleNetwork)
 
 // Exported functions
 
+export function blockExplorerAccountURL(
+  account: Readonly<string>,
+): Readonly<string> {
+  return `${
+    blockExplorers[state.chainId] || blockExplorers[28]
+  }/address/${account}`
+}
+
 export async function connect() {
   await handleConnect()
 }
@@ -134,7 +150,7 @@ export function disconnect() {
   state.setAccount(null)
 }
 
-export async function switchNetwork(chainId: number) {
+export async function switchNetwork(chainId: Readonly<number>) {
   try {
     await provider.send("wallet_switchEthereumChain", [
       { chainId: ethers.utils.hexValue(chainId) },

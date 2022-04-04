@@ -1,9 +1,25 @@
 import m from "mithril"
+import type { Vnode } from "mithril"
+// @ts-ignore
+import { renderIcon } from "@download/blockies"
 import state from "../state"
-import { connect, disconnect, switchNetwork } from "../lib/contract"
+import {
+  connect,
+  disconnect,
+  switchNetwork,
+  blockExplorerAccountURL,
+} from "../lib/contract"
+// @ts-ignore
+import MetamaskIcon from "../assets/images/metamask.svg"
 
 function validChainId(chainId: number): boolean {
   return [288, 28].includes(chainId)
+}
+
+function formatAccount(account: string): string {
+  return `0x${state.account.slice(2, 6)}...${state.account.slice(
+    state.account.length - 4,
+  )}`
 }
 
 const Search = () => {
@@ -54,7 +70,7 @@ const NetworkSelect = {
         m(
           "option",
           { value: "", disabled: true, hidden: true },
-          "WRONG NETWORK",
+          "Wrong Network!",
         ),
         m("option", { value: 288 }, "Boba Mainnet"),
         m("option", { value: 28 }, "Boba Rinkeby"),
@@ -75,50 +91,135 @@ const ConnectButton = {
       },
       state.isConnectPending
         ? [
-            m("span", { "uk-icon": "icon: clock", class: "icon" }),
+            m("span", {
+              "uk-icon": "icon: clock",
+              class: "uk-margin-xsmall-right",
+            }),
             m("span", "Connecting..."),
           ]
         : [
-            m("span", { "uk-icon": "icon: sign-in", class: "icon" }),
+            m("span", {
+              "uk-icon": "icon: sign-in",
+              class: "uk-margin-xsmall-right",
+            }),
             m("span", "Connect Wallet"),
           ],
     )
   },
 }
 
-const AccountDropdown = {
-  view() {
-    return [
-      m(
-        "button",
-        {
-          class:
-            "uk-button uk-button-default uk-margin-medium-left uk-text-capitalize uk-text-nowrap",
+const Identicon = (vnode: Vnode<{ address: string; class: string }>) => {
+  const { address, class: class_ } = vnode.attrs
+
+  return {
+    view() {
+      return m("canvas", {
+        oncreate(vnode) {
+          renderIcon(
+            {
+              seed: address,
+              size: 10,
+              scale: 2,
+            },
+            vnode.dom,
+          )
         },
-        [
-          m("span", state.account),
-          m("span", { "uk-icon": "icon: triangle-down" }),
-        ],
-      ),
-      m(
-        "div",
-        { "uk-dropdown": "mode: click; pos: top-right" },
-        m("ul", { class: "uk-nav uk-dropdown-nav" }, [
-          m(
-            "li",
+        class: `${class_} uk-border-rounded`,
+      })
+    },
+  }
+}
+
+const AccountDropdown = () => {
+  let copied = false
+
+  return {
+    view() {
+      return [
+        m(
+          "button",
+          {
+            class:
+              "uk-button uk-button-default uk-flex uk-flex-middle uk-margin-medium-left uk-text-capitalize uk-text-nowrap",
+          },
+          [
+            m(Identicon, {
+              address: state.account,
+              class: "uk-margin-small-right",
+            }),
+            m("span", formatAccount(state.account)),
+            m("span", {
+              "uk-icon": "icon: triangle-down",
+              class: "uk-margin-xsmall-left",
+            }),
+          ],
+        ),
+        m(
+          "div",
+          { "uk-dropdown": "mode: click; pos: top-right" },
+          m("ul", { class: "uk-nav uk-dropdown-nav" }, [
             m(
-              "button",
-              { onclick: disconnect, class: "uk-button uk-text-capitalize" },
+              "li",
+              { class: "uk-flex uk-flex-middle uk-margin-small-bottom" },
               [
-                m("span", { "uk-icon": "icon: sign-out", class: "icon" }),
-                m("span", "Disconnect"),
+                m("span", "Connected with MetaMask"),
+                m("img", {
+                  class: "image-icon uk-margin-small-left",
+                  src: MetamaskIcon,
+                }),
               ],
             ),
-          ),
-        ]),
-      ),
-    ]
-  },
+            m(
+              "li",
+              { class: "uk-flex uk-flex-middle uk-margin-small-bottom" },
+              [
+                m(Identicon, {
+                  address: state.account,
+                  class: "uk-margin-xsmall-right",
+                }),
+                m(
+                  "a",
+                  {
+                    class: "uk-text-primary",
+                    href: blockExplorerAccountURL(state.account),
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  },
+                  formatAccount(state.account),
+                ),
+                m("button", {
+                  async onclick() {
+                    copied = true
+                    await window.navigator.clipboard.writeText(state.account)
+                    window.setTimeout(() => {
+                      copied = false
+                      m.redraw()
+                    }, 500)
+                  },
+                  "uk-icon": `icon: ${copied ? "check" : "copy"}; ratio: 0.8`,
+                  class: "uk-margin-xsmall-left",
+                }),
+              ],
+            ),
+            m(
+              "li",
+              m(
+                "button",
+                { onclick: disconnect, class: "uk-button uk-text-capitalize" },
+                [
+                  m("span", {
+                    "uk-icon": "icon: sign-out",
+                    class: "uk-margin-xsmall-right",
+                  }),
+                  m("span", "Disconnect"),
+                ],
+              ),
+            ),
+          ]),
+        ),
+      ]
+    },
+  }
 }
 
 const Header = () => {
