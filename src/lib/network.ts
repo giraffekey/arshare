@@ -35,16 +35,107 @@ interface AddEthereumChainParameter {
 // Constants
 
 const rpcs = <{ [chainId: number]: string }>{
+  1: "https://mainnet.infura.io/v3",
+  3: "https://ropsten.infura.io/v3",
+  4: "https://rinkeby.infura.io/v3",
+  5: "https://goerli.infura.io/v3",
+  42: "https://kovan.infura.io/v3",
+  137: "https://polygon-rpc.com",
+  80001: "https://rpc-mumbai.maticvigil.com",
   288: "https://mainnet.boba.network",
   28: "https://rinkeby.boba.network",
 }
 
 const blockExplorers = <{ [chainId: number]: string }>{
+  1: "https://etherscan.io",
+  3: "https://ropsten.etherscan.io",
+  4: "https://rinkeby.etherscan.io",
+  5: "https://goerli.etherscan.io",
+  42: "https://kovan.etherscan.io",
+  137: "https://polygonscan.com",
+  80001: "https://mumbai.polygonscan.com",
   288: "https://blockexplorer.boba.network",
   28: "https://blockexplorer.rinkeby.boba.network",
 }
 
 const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
+  1: {
+    chainId: ethers.utils.hexValue(1),
+    chainName: "Ethereum Mainnet",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[1]],
+    blockExplorerUrls: [blockExplorers[1]],
+  },
+  3: {
+    chainId: ethers.utils.hexValue(3),
+    chainName: "Ethereum Ropsten Testnet",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[3]],
+    blockExplorerUrls: [blockExplorers[3]],
+  },
+  4: {
+    chainId: ethers.utils.hexValue(4),
+    chainName: "Ethereum Rinkeby Testnet",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[4]],
+    blockExplorerUrls: [blockExplorers[4]],
+  },
+  5: {
+    chainId: ethers.utils.hexValue(5),
+    chainName: "Ethereum Goerli Testnet",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[5]],
+    blockExplorerUrls: [blockExplorers[5]],
+  },
+  42: {
+    chainId: ethers.utils.hexValue(42),
+    chainName: "Ethereum Kovan Testnet",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[42]],
+    blockExplorerUrls: [blockExplorers[42]],
+  },
+  137: {
+    chainId: ethers.utils.hexValue(137),
+    chainName: "Polygon Mainnet",
+    nativeCurrency: {
+      name: "Polygon",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[137]],
+    blockExplorerUrls: [blockExplorers[137]],
+  },
+  80001: {
+    chainId: ethers.utils.hexValue(80001),
+    chainName: "Polygon Mumbai Testnet",
+    nativeCurrency: {
+      name: "Polygon",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: [rpcs[80001]],
+    blockExplorerUrls: [blockExplorers[80001]],
+  },
   288: {
     chainId: ethers.utils.hexValue(288),
     chainName: "Boba Mainnet",
@@ -77,9 +168,9 @@ const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
 
 const bundlr: WebBundlr = new WebBundlr(
   "https://devnet.bundlr.network",
-  "boba",
+  "matic",
   provider,
-  { providerUrl: rpcs[28] },
+  { providerUrl: rpcs[80001] },
 )
 
 if (window.ethereum.isConnected())
@@ -169,7 +260,8 @@ async function lazyFund(size: Readonly<number>) {
   const balance = await bundlr.getLoadedBalance()
 
   if (balance.isLessThan(price)) {
-    await bundlr.fund(price)
+    const amount = price.minus(balance).multipliedBy(1.1)
+    await bundlr.fund(amount.minus(amount.modulo(1)))
   }
 }
 

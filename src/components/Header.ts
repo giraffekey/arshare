@@ -13,7 +13,7 @@ import {
 import MetamaskIcon from "../assets/images/metamask.svg"
 
 function validChainId(chainId: number): boolean {
-  return [288, 28].includes(chainId)
+  return [1, 3, 4, 5, 42, 137, 80001, 288, 28].includes(chainId)
 }
 
 function formatAccount(account: string): string {
@@ -72,8 +72,15 @@ const NetworkSelect = {
           { value: "", disabled: true, hidden: true },
           "Wrong Network!",
         ),
+        m("option", { value: 1 }, "Ethereum Mainnet"),
+        m("option", { value: 3 }, "Ethereum Ropsten Testnet"),
+        m("option", { value: 4 }, "Ethereum Rinkeby Testnet"),
+        m("option", { value: 5 }, "Ethereum Goerli Testnet"),
+        m("option", { value: 42 }, "Ethereum Kovan Testnet"),
+        m("option", { value: 137 }, "Polygon Mainnet"),
+        m("option", { value: 80001 }, "Polygon Mumbai Testnet"),
         m("option", { value: 288 }, "Boba Mainnet"),
-        m("option", { value: 28 }, "Boba Rinkeby"),
+        m("option", { value: 28 }, "Boba Rinkeby Testnet"),
       ],
     )
   },
@@ -175,7 +182,7 @@ const AccountDropdown = () => {
               [
                 m(Identicon, {
                   address: state.account,
-                  class: "uk-margin-xsmall-right",
+                  class: "uk-margin-small-right",
                 }),
                 m(
                   "a",
@@ -197,7 +204,7 @@ const AccountDropdown = () => {
                     }, 500)
                   },
                   "uk-icon": `icon: ${copied ? "check" : "copy"}; ratio: 0.8`,
-                  class: "uk-margin-xsmall-left",
+                  class: "uk-margin-small-left",
                 }),
               ],
             ),
