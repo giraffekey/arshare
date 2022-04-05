@@ -27,11 +27,13 @@ interface ConnectInfo {
   chainId: string
 }
 
-// Variables
+// Initialize
 
 const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
 
 // const contract = new ethers.Contract("address", contractJson.abi, provider)
+
+let preparing = false
 
 if (window.ethereum.isConnected() && state.bundlr !== null)
   state.setAccount(window.ethereum.selectedAddress)
@@ -40,14 +42,18 @@ provider.getNetwork().then(handleNetwork)
 // Helper functions
 
 async function prepareBundlr() {
-  const bundlr = new WebBundlr(
-    bundlrRpcs[state.chainId],
-    bundlrCurrencies[state.chainId],
-    provider,
-    { providerUrl: rpcs[state.chainId] },
-  )
-  await bundlr.ready()
-  state.setBundlr(bundlr)
+  if (!preparing) {
+    preparing = true
+    const bundlr = new WebBundlr(
+      bundlrRpcs[state.chainId],
+      bundlrCurrencies[state.chainId],
+      provider,
+      { providerUrl: rpcs[state.chainId] },
+    )
+    await bundlr.ready()
+    state.setBundlr(bundlr)
+    preparing = false
+  }
 }
 
 // Events
@@ -66,7 +72,6 @@ async function handleConnect(connectInfo?: ConnectInfo) {
       if (state.bundlr === null) await prepareBundlr()
 
       state.setAccount(accounts[0])
-
       state.setConnectPending(false)
       m.redraw()
     } catch (e) {
@@ -87,9 +92,13 @@ function handleAccounts(accounts: string[]) {
   m.redraw()
 }
 
-function handleNetwork(network: Network) {
+async function handleNetwork(network: Network) {
   state.setChain(network.chainId)
   m.redraw()
+  if (state.bundlr !== null) {
+    await prepareBundlr()
+    m.redraw()
+  }
 }
 
 window.ethereum.on("connect", handleConnect)
@@ -127,9 +136,6 @@ export async function switchNetwork(chainId: Readonly<number>) {
   }
 
   state.setChain(chainId)
-  m.redraw()
-
-  await prepareBundlr()
   m.redraw()
 }
 
