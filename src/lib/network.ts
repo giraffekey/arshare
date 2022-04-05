@@ -33,7 +33,7 @@ const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
 
 // const contract = new ethers.Contract("address", contractJson.abi, provider)
 
-if (window.ethereum.isConnected())
+if (window.ethereum.isConnected() && state.bundlr !== null)
   state.setAccount(window.ethereum.selectedAddress)
 provider.getNetwork().then(handleNetwork)
 
