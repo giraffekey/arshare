@@ -1,3 +1,5 @@
+import { defaultChainId } from "./config"
+
 interface State {
   isConnectPending: boolean
   account: string
@@ -12,7 +14,7 @@ interface State {
 const State: State = {
   isConnectPending: false,
   account: null,
-  chainId: 80001,
+  chainId: defaultChainId,
   links: [],
   setConnectPending(isPending: Readonly<boolean>) {
     State.isConnectPending = isPending

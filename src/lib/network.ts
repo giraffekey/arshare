@@ -3,7 +3,14 @@ import { ethers } from "ethers"
 import type { Network } from "@ethersproject/providers"
 import { WebBundlr } from "@bundlr-network/client"
 import axios from "axios"
+import {
+  bundlrCurrencies,
+  rpcs,
+  blockExplorers,
+  metamaskChains,
+} from "./chains"
 import { decryptFile, decodeLink, encryptFile, encodeLink } from "./crypto"
+import { defaultChainId } from "../config"
 import state from "../state"
 // import contractJson from "../../build/contracts/Arshare.json"
 
@@ -19,74 +26,6 @@ interface ConnectInfo {
   chainId: string
 }
 
-interface AddEthereumChainParameter {
-  chainId: string
-  chainName: string
-  nativeCurrency: {
-    name: string
-    symbol: string
-    decimals: 18
-  }
-  rpcUrls: string[]
-  blockExplorerUrls?: string[]
-  iconUrls?: string[]
-}
-
-// Constants
-
-const rpcs = <{ [chainId: number]: string }>{
-  1: "https://mainnet.infura.io/v3",
-  3: "https://ropsten.infura.io/v3",
-  4: "https://rinkeby.infura.io/v3",
-  5: "https://goerli.infura.io/v3",
-  42: "https://kovan.infura.io/v3",
-  137: "https://polygon-rpc.com",
-  80001: "https://rpc-mumbai.maticvigil.com",
-  288: "https://mainnet.boba.network",
-  28: "https://rinkeby.boba.network",
-}
-
-const blockExplorers = <{ [chainId: number]: string }>{
-  1: "https://etherscan.io",
-  3: "https://ropsten.etherscan.io",
-  4: "https://rinkeby.etherscan.io",
-  5: "https://goerli.etherscan.io",
-  42: "https://kovan.etherscan.io",
-  137: "https://polygonscan.com",
-  80001: "https://mumbai.polygonscan.com",
-  288: "https://blockexplorer.boba.network",
-  28: "https://blockexplorer.rinkeby.boba.network",
-}
-
-const genChain = (
-  chainId: number,
-  chainName: string,
-  currencyName: string,
-  currencySymbol: string,
-): AddEthereumChainParameter => ({
-  chainId: ethers.utils.hexValue(chainId),
-  chainName,
-  nativeCurrency: {
-    name: currencyName,
-    symbol: currencySymbol,
-    decimals: 18,
-  },
-  rpcUrls: [rpcs[chainId]],
-  blockExplorerUrls: [blockExplorers[chainId]],
-})
-
-const chains = <{ [chainId: number]: AddEthereumChainParameter }>{
-  1: genChain(1, "Ethereum Mainnet", "Ethereum", "ETH"),
-  3: genChain(3, "Ethereum Ropsten Testnet", "Ethereum", "ETH"),
-  4: genChain(4, "Ethereum Rinkeby Testnet", "Ethereum", "ETH"),
-  5: genChain(5, "Ethereum Goerli Testnet", "Ethereum", "ETH"),
-  42: genChain(42, "Ethereum Kovan Testnet", "Ethereum", "ETH"),
-  137: genChain(137, "Polygon Mainnet", "Polygon", "MATIC"),
-  80001: genChain(80001, "Polygon Mumbai Testnet", "Polygon", "MATIC"),
-  288: genChain(288, "Boba Mainnet", "Ethereum", "ETH"),
-  28: genChain(28, "Boba Rinkeby Testnet", "Ethereum", "ETH"),
-}
-
 // Variables
 
 const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
@@ -95,9 +34,9 @@ const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
 
 const bundlr: WebBundlr = new WebBundlr(
   "https://devnet.bundlr.network",
-  "matic",
+  bundlrCurrencies[defaultChainId],
   provider,
-  { providerUrl: rpcs[80001] },
+  { providerUrl: rpcs[defaultChainId] },
 )
 
 if (window.ethereum.isConnected())
@@ -156,7 +95,7 @@ export function blockExplorerAccountURL(
   account: Readonly<string>,
 ): Readonly<string> {
   return `${
-    blockExplorers[state.chainId] || blockExplorers[28]
+    blockExplorers[state.chainId] || blockExplorers[defaultChainId]
   }/address/${account}`
 }
 
@@ -175,7 +114,7 @@ export async function switchNetwork(chainId: Readonly<number>) {
     ])
   } catch (err) {
     if (err.code === 4902) {
-      await provider.send("wallet_addEthereumChain", [chains[chainId]])
+      await provider.send("wallet_addEthereumChain", [metamaskChains[chainId]])
     }
   }
   state.setChain(chainId)
