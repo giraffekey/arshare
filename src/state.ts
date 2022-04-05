@@ -1,17 +1,39 @@
 import type { WebBundlr } from "@bundlr-network/client"
 import { defaultChainId } from "./config"
 
-interface State {
+export interface FileUpload {
+  link: string
+  name: string
+  size: number
+  date: Date
+  failed: boolean
+  progress: {
+    encrypted: number
+    funded: boolean
+    signed: boolean
+    uploaded: number
+  }
+}
+
+export interface ProgressUpdate {
+  type: "encrypted" | "funded" | "signed" | "uploaded"
+  value: number | boolean
+}
+
+export interface State {
   isConnectPending: boolean
   account: string
   chainId: number
   bundlr: WebBundlr
-  links: string[]
-  setConnectPending: (isPending: Readonly<boolean>) => void
-  setAccount: (account: Readonly<string>) => void
-  setChain: (chainId: Readonly<number>) => void
-  setBundlr: (bundlr: Readonly<WebBundlr>) => void
-  addLink: (link: Readonly<string>) => void
+  files: { [id: number]: FileUpload }
+  setConnectPending: (isPending: boolean) => void
+  setAccount: (account: string) => void
+  setChain: (chainId: number) => void
+  setBundlr: (bundlr: WebBundlr) => void
+  addFile: (file: File) => number
+  updateFileProgress: (id: number, progress: ProgressUpdate) => void
+  setFileFailed: (id: number, failed: boolean) => void
+  setFileLink: (id: number, link: string) => void
 }
 
 const State: State = {
@@ -19,21 +41,44 @@ const State: State = {
   account: null,
   chainId: defaultChainId,
   bundlr: null,
-  links: [],
-  setConnectPending(isPending: Readonly<boolean>) {
+  files: [],
+  setConnectPending(isPending: boolean) {
     State.isConnectPending = isPending
   },
-  setAccount(account: Readonly<string>) {
+  setAccount(account: string) {
     State.account = account
   },
-  setChain(chainId: Readonly<number>) {
+  setChain(chainId: number) {
     State.chainId = chainId
   },
-  setBundlr(bundlr: Readonly<WebBundlr>) {
+  setBundlr(bundlr: WebBundlr) {
     State.bundlr = bundlr
   },
-  addLink(link: Readonly<string>) {
-    State.links.unshift(link)
+  addFile(file: File): number {
+    const id = Math.floor(Math.random() * Number.MAX_VALUE)
+    State.files[id] = {
+      link: null,
+      name: file.name,
+      size: file.size,
+      date: new Date(),
+      failed: false,
+      progress: {
+        encrypted: 0,
+        funded: false,
+        signed: false,
+        uploaded: 0,
+      },
+    }
+    return id
+  },
+  updateFileProgress(id: number, progress: ProgressUpdate) {
+    State.files[id].progress[progress.type] = progress.value as never
+  },
+  setFileFailed(id: number, failed: boolean) {
+    State.files[id].failed = failed
+  },
+  setFileLink(id: number, link: string) {
+    State.files[id].link = link
   },
 }
 

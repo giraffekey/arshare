@@ -42,6 +42,7 @@ function decryptBytes(
 
 export async function encryptFile(
   file: Readonly<File>,
+  update: (progress: number) => void,
 ): Promise<Readonly<{ data: Uint8Array; key: Uint8Array }>> {
   await _sodium.ready
   const sodium = _sodium
@@ -58,12 +59,14 @@ export async function encryptFile(
   let dataSize = decryptMetadataSize
 
   data.set(header)
+  update(headerSize / data.length)
 
   const contentType = new Uint8Array(encryptContentTypeSize)
   contentType.set(
     sodium.from_string(file.type).slice(0, encryptContentTypeSize),
   )
   data.set(encryptBytes(sodium, state_out, contentType, false), headerSize)
+  update((headerSize + decryptContentTypeSize) / data.length)
 
   const filename = new Uint8Array(encryptFilenameSize)
   const [name, ext] = file.name.split(".", 2).map(sodium.from_string)
@@ -78,6 +81,7 @@ export async function encryptFile(
     encryptBytes(sodium, state_out, filename, false),
     headerSize + decryptContentTypeSize,
   )
+  update(decryptMetadataSize / data.length)
 
   for (let i = 0; i < totalChunks; i++) {
     const final = i == totalChunks - 1
@@ -87,7 +91,10 @@ export async function encryptFile(
     const chunk = encryptBytes(sodium, state_out, bytes, final)
     data.set(chunk, decryptMetadataSize + i * decryptChunkSize)
     dataSize += chunk.length
+    update(dataSize / data.length)
   }
+
+  update(100)
 
   return {
     data: data.slice(0, dataSize),

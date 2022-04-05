@@ -3,6 +3,8 @@ import { ethers } from "ethers"
 import type { Network } from "@ethersproject/providers"
 import { WebBundlr } from "@bundlr-network/client"
 import axios from "axios"
+// @ts-ignore
+import { Readable } from "stream-browserify"
 import {
   bundlrRpcs,
   bundlrCurrencies,
@@ -13,6 +15,7 @@ import {
 import { decryptFile, decodeLink, encryptFile, encodeLink } from "./crypto"
 import { defaultChainId } from "../config"
 import state from "../state"
+import { ProgressUpdate } from "../state"
 // import contractJson from "../../build/contracts/Arshare.json"
 
 // Types
@@ -153,15 +156,22 @@ async function lazyFund(size: Readonly<number>) {
 
 export async function uploadFile(
   file: Readonly<File>,
+  update: (progress: ProgressUpdate) => void,
 ): Promise<Readonly<string>> {
   if (state.bundlr === null) throw new Error("Bundlr not initialized")
 
   const tags = [{ name: "Content-Type", value: "application/octet-stream" }]
-  const { data, key } = await encryptFile(file)
+  const { data, key } = await encryptFile(file, (progress) => update({ type: "encrypted", value: progress }))
+
   await lazyFund(data.length)
+  update({ type: "funded", value: true })
+
   const tx = state.bundlr.createTransaction(data, { tags })
   await tx.sign()
+  update({ type: "signed", value: true })
   await tx.upload()
+  update({ type: "uploaded", value: 100 })
+
   return await encodeLink(tx.id, key)
 }
 

@@ -1,5 +1,7 @@
 // Custom variables
+
 // Variable overwrites
+$global-danger-background: darken(#f0506e, 10%);
 
 @import "uikit/src/scss/variables-theme.scss";
 @import "uikit/src/scss/mixins-theme.scss";
@@ -18,6 +20,11 @@
 .uk-padding-small-vertical {
   padding-top: $global-small-gutter;
   padding-bottom: $global-small-gutter;
+}
+
+.uk-margin-remove-vertical {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .uk-margin-small-vertical {
@@ -49,18 +56,17 @@
 }
 
 .wrong-network {
-  $color: darken($global-danger-background, 10%);
-  border-color: $color;
+  border-color: $global-danger-background;
 
   &,
   &:focus {
     color: white;
     font-weight: bold;
-    background: $color;
+    background: $global-danger-background;
   }
 
   &:focus {
-    border-color: $global-danger-background;
+    border-color: lighten($global-danger-background, 10%);
   }
 }
 
