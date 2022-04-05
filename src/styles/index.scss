@@ -20,6 +20,11 @@
   padding-bottom: $global-small-gutter;
 }
 
+.uk-margin-small-vertical {
+  margin-top: $global-small-gutter;
+  margin-bottom: $global-small-gutter;
+}
+
 .uk-margin-xsmall-left {
   margin-left: calc($global-small-margin / 2);
 }
