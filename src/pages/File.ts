@@ -18,7 +18,10 @@ const DisplayFile = (
       const [type, _ext] = contentType.split("/")
       switch (type) {
         case "image":
-          return m("img", { src: createURL(data, contentType) })
+          return m("img", {
+            class: "uk-height-large",
+            src: createURL(data, contentType),
+          })
         case "audio":
           return m("audio", {
             src: createURL(data, contentType),
@@ -26,13 +29,14 @@ const DisplayFile = (
           })
         case "video":
           return m("video", {
+            class: "uk-height-large",
             src: createURL(data, contentType),
             controls: true,
           })
         default:
           switch (contentType) {
             case "text/plain":
-              return m("textarea", { value: bytesToString(data) })
+              return bytesToString(data).split("\n").map((p) => m("p", p))
             default:
               return m(null)
           }
@@ -62,15 +66,21 @@ const FilePage = () => {
       return [
         m(Header),
         m("main", [
+          m("h2", { class: "uk-text-default uk-text-center uk-margin-small-top" }, link),
           data
-            ? [
+            ? m("div", { class: "uk-flex uk-flex-column uk-flex-middle" }, [
                 m(DisplayFile, { data, contentType }),
                 m(
                   "a",
-                  { href: createURL(data, contentType), download: filename },
+                  {
+                    class:
+                      "uk-link-text uk-button uk-button-default uk-border-rounded uk-margin-small-vertical",
+                    href: createURL(data, contentType),
+                    download: filename,
+                  },
                   `Download ${filename}`,
                 ),
-              ]
+              ])
             : m("p", "Decrypting..."),
         ]),
       ]
