@@ -29,7 +29,7 @@ const Search = () => {
         {
           onsubmit(e: SubmitEvent) {
             e.preventDefault()
-            m.route.set("/file/:link", { link })
+            m.route.set("/file/:link", { link }, { state: { key: link } })
           },
           class: "uk-search uk-search-default uk-flex-1 uk-margin-medium-left",
         },

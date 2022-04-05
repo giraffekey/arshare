@@ -23,7 +23,7 @@ const Home = {
           state.links.map((link) =>
             m(
               m.route.Link,
-              { class: "uk-link-text", href: `/file/${link}` },
+              { class: "uk-link-text", href: `/file/${link}`, options: { state: { key: link } } },
               link,
             ),
           ),
