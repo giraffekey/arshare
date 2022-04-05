@@ -3,6 +3,7 @@ import type { Vnode } from "mithril"
 // @ts-ignore
 import { renderIcon } from "@download/blockies"
 import state from "../state"
+import { chainIds, chainNames } from "../lib/chains"
 import {
   connect,
   disconnect,
@@ -11,10 +12,6 @@ import {
 } from "../lib/network"
 // @ts-ignore
 import MetamaskIcon from "../assets/images/metamask.svg"
-
-function validChainId(chainId: number): boolean {
-  return [1, 3, 4, 5, 42, 137, 80001, 288, 28].includes(chainId)
-}
 
 function formatAccount(account: string): string {
   return `0x${state.account.slice(2, 6)}...${state.account.slice(
@@ -41,7 +38,7 @@ const Search = () => {
           m("input[type=search]", {
             oninput: (e: InputEvent) =>
               (link = (e.target as HTMLInputElement).value),
-            class: "uk-search-input",
+            class: "uk-search-input uk-border-pill",
             placeholder: "Search link...",
             value: link,
           }),
@@ -63,8 +60,10 @@ const NetworkSelect = {
             switchNetwork(chainId)
           }
         },
-        class: "uk-select uk-form-width-medium uk-margin-medium-left",
-        value: validChainId(state.chainId) ? state.chainId : "",
+        class: `${
+          !chainIds.includes(state.chainId) && "wrong-network"
+        } uk-select uk-form-width-medium uk-border-rounded uk-margin-medium-left`,
+        value: chainIds.includes(state.chainId) ? state.chainId : "",
       },
       [
         m(
@@ -72,15 +71,10 @@ const NetworkSelect = {
           { value: "", disabled: true, hidden: true },
           "Wrong Network!",
         ),
-        m("option", { value: 1 }, "Ethereum Mainnet"),
-        m("option", { value: 3 }, "Ethereum Ropsten Testnet"),
-        m("option", { value: 4 }, "Ethereum Rinkeby Testnet"),
-        m("option", { value: 5 }, "Ethereum Goerli Testnet"),
-        m("option", { value: 42 }, "Ethereum Kovan Testnet"),
-        m("option", { value: 137 }, "Polygon Mainnet"),
-        m("option", { value: 80001 }, "Polygon Mumbai Testnet"),
-        m("option", { value: 288 }, "Boba Mainnet"),
-        m("option", { value: 28 }, "Boba Rinkeby Testnet"),
+        m("option", { value: "", disabled: true }, "Select a Network"),
+        chainIds.map((chainId) =>
+          m("option", { value: chainId }, chainNames[chainId]),
+        ),
       ],
     )
   },
@@ -93,7 +87,7 @@ const ConnectButton = {
       {
         onclick: connect,
         class:
-          "connect-button uk-button uk-button-default uk-margin-medium-left uk-text-bold uk-text-capitalize uk-text-nowrap",
+          "connect-button uk-button uk-button-default uk-border-rounded uk-margin-medium-left uk-text-bold uk-text-capitalize uk-text-nowrap",
         disabled: state.isConnectPending,
       },
       state.isConnectPending
@@ -147,7 +141,7 @@ const AccountDropdown = () => {
           "button",
           {
             class:
-              "uk-button uk-button-default uk-flex uk-flex-middle uk-margin-medium-left uk-text-capitalize uk-text-nowrap",
+              "uk-button uk-button-default uk-flex uk-flex-middle uk-border-rounded uk-margin-medium-left uk-text-capitalize uk-text-nowrap",
           },
           [
             m(Identicon, {
