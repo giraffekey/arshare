@@ -15,7 +15,7 @@ const Home = {
             state.addLink(await uploadFile(file))
             m.redraw()
           },
-          disabled: !state.account,
+          disabled: state.bundlr === null,
         }),
         m(
           "div",

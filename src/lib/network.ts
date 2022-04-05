@@ -4,6 +4,7 @@ import type { Network } from "@ethersproject/providers"
 import { WebBundlr } from "@bundlr-network/client"
 import axios from "axios"
 import {
+  bundlrRpcs,
   bundlrCurrencies,
   rpcs,
   blockExplorers,
@@ -32,16 +33,22 @@ const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
 
 // const contract = new ethers.Contract("address", contractJson.abi, provider)
 
-const bundlr: WebBundlr = new WebBundlr(
-  "https://devnet.bundlr.network",
-  bundlrCurrencies[defaultChainId],
-  provider,
-  { providerUrl: rpcs[defaultChainId] },
-)
-
 if (window.ethereum.isConnected())
   state.setAccount(window.ethereum.selectedAddress)
 provider.getNetwork().then(handleNetwork)
+
+// Helper functions
+
+async function prepareBundlr() {
+  const bundlr = new WebBundlr(
+    bundlrRpcs[state.chainId],
+    bundlrCurrencies[state.chainId],
+    provider,
+    { providerUrl: rpcs[state.chainId] },
+  )
+  await bundlr.ready()
+  state.setBundlr(bundlr)
+}
 
 // Events
 
@@ -50,14 +57,15 @@ async function handleConnect(connectInfo?: ConnectInfo) {
     state.setConnectPending(true)
     m.redraw()
 
+    if (connectInfo)
+      state.setChain(ethers.BigNumber.from(connectInfo.chainId).toNumber())
+
     try {
       const accounts = await provider.send("eth_requestAccounts", [])
       await provider._ready()
-      await bundlr.ready()
+      if (state.bundlr === null) await prepareBundlr()
 
       state.setAccount(accounts[0])
-      if (connectInfo)
-        state.setChain(ethers.BigNumber.from(connectInfo.chainId).toNumber())
 
       state.setConnectPending(false)
       m.redraw()
@@ -117,27 +125,35 @@ export async function switchNetwork(chainId: Readonly<number>) {
       await provider.send("wallet_addEthereumChain", [metamaskChains[chainId]])
     }
   }
+
   state.setChain(chainId)
+  m.redraw()
+
+  await prepareBundlr()
   m.redraw()
 }
 
 async function lazyFund(size: Readonly<number>) {
-  const price = await bundlr.getPrice(size)
-  const balance = await bundlr.getLoadedBalance()
+  if (state.bundlr === null) throw new Error("Bundlr not initialized")
+
+  const price = await state.bundlr.getPrice(size)
+  const balance = await state.bundlr.getLoadedBalance()
 
   if (balance.isLessThan(price)) {
     const amount = price.minus(balance).multipliedBy(1.1)
-    await bundlr.fund(amount.minus(amount.modulo(1)))
+    await state.bundlr.fund(amount.minus(amount.modulo(1)))
   }
 }
 
 export async function uploadFile(
   file: Readonly<File>,
 ): Promise<Readonly<string>> {
+  if (state.bundlr === null) throw new Error("Bundlr not initialized")
+
   const tags = [{ name: "Content-Type", value: "application/octet-stream" }]
   const { data, key } = await encryptFile(file)
   await lazyFund(data.length)
-  const tx = bundlr.createTransaction(data, { tags })
+  const tx = state.bundlr.createTransaction(data, { tags })
   await tx.sign()
   await tx.upload()
   return await encodeLink(tx.id, key)
