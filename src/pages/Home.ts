@@ -61,10 +61,15 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                 ),
               ],
             )
-          : file.failed ? m("p", { class: "uk-margin-remove uk-text-danger"}, "Failed to upload file")
+          : file.failed
+          ? m(
+              "p",
+              { class: "uk-margin-remove uk-text-danger" },
+              "Failed to upload file",
+            )
           : [
               m(
-                "div",
+                "label",
                 { class: "uk-flex uk-flex-middle" },
                 m(
                   "span",
@@ -73,7 +78,8 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                     : "Encrypting...",
                 ),
                 m("progress", {
-                  class: "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
+                  class:
+                    "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
                   value: file.progress.encrypted,
                   max: 100,
                 }),
@@ -86,7 +92,11 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                     class: "uk-checkbox",
                     checked: file.progress.funded,
                   }),
-                  m("span", { class: "uk-margin-small-left" }, file.progress.funded ? "Funded" : "Funding..."),
+                  m(
+                    "span",
+                    { class: "uk-margin-small-left" },
+                    file.progress.funded ? "Funded" : "Funding...",
+                  ),
                 ),
               file.progress.funded &&
                 m(
@@ -96,11 +106,15 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                     class: "uk-checkbox",
                     checked: file.progress.signed,
                   }),
-                  m("span", { class: "uk-margin-small-left" }, file.progress.signed ? "Signed" : "Signing..."),
+                  m(
+                    "span",
+                    { class: "uk-margin-small-left" },
+                    file.progress.signed ? "Signed" : "Signing...",
+                  ),
                 ),
               file.progress.signed &&
                 m(
-                  "div",
+                  "label",
                   { class: "uk-flex uk-flex-middle" },
                   m(
                     "span",
@@ -109,13 +123,14 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                       : "Uploading...",
                   ),
                   m("progress", {
-                    class: "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
+                    class:
+                      "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
                     value: file.progress.uploaded,
                     max: 100,
                   }),
                 ),
             ],
-          m("hr"),
+        m("hr"),
       ])
     },
   }
@@ -132,7 +147,7 @@ const Home = {
             const id = state.addFile(file)
             try {
               const link = await uploadFile(file, (progress) => {
-                state.updateFileProgress(id, progress)
+                state.updateFileProgress(id, progress.type, progress.value)
                 m.redraw()
               })
               state.setFileLink(id, link)
@@ -149,7 +164,7 @@ const Home = {
           "div",
           { class: "uk-flex uk-flex-column" },
           Object.entries(state.files)
-            .sort(([,a], [,b]) => b.date.getTime() - a.date.getTime())
+            .sort(([, a], [, b]) => b.date.getTime() - a.date.getTime())
             .map(([id, file]) => m(Upload, { key: id, file })),
         ),
       ]),

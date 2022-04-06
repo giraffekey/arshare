@@ -15,10 +15,7 @@ export interface FileUpload {
   }
 }
 
-export interface ProgressUpdate {
-  type: "encrypted" | "funded" | "signed" | "uploaded"
-  value: number | boolean
-}
+type FileProgress = "encrypted" | "funded" | "signed" | "uploaded"
 
 export interface State {
   isConnectPending: boolean
@@ -31,7 +28,11 @@ export interface State {
   setChain: (chainId: number) => void
   setBundlr: (bundlr: WebBundlr) => void
   addFile: (file: File) => number
-  updateFileProgress: (id: number, progress: ProgressUpdate) => void
+  updateFileProgress: (
+    id: number,
+    type: FileProgress,
+    value: number | boolean,
+  ) => void
   setFileFailed: (id: number, failed: boolean) => void
   setFileLink: (id: number, link: string) => void
 }
@@ -71,8 +72,8 @@ const State: State = {
     }
     return id
   },
-  updateFileProgress(id: number, progress: ProgressUpdate) {
-    State.files[id].progress[progress.type] = progress.value as never
+  updateFileProgress(id: number, type: FileProgress, value: number | boolean) {
+    State.files[id].progress[type] = value as never
   },
   setFileFailed(id: number, failed: boolean) {
     State.files[id].failed = failed

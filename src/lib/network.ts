@@ -3,8 +3,6 @@ import { ethers } from "ethers"
 import type { Network } from "@ethersproject/providers"
 import { WebBundlr } from "@bundlr-network/client"
 import axios from "axios"
-// @ts-ignore
-import { Readable } from "stream-browserify"
 import {
   bundlrRpcs,
   bundlrCurrencies,
@@ -15,7 +13,6 @@ import {
 import { decryptFile, decodeLink, encryptFile, encodeLink } from "./crypto"
 import { defaultChainId } from "../config"
 import state from "../state"
-import { ProgressUpdate } from "../state"
 // import contractJson from "../../build/contracts/Arshare.json"
 
 // Types
@@ -28,6 +25,16 @@ declare global {
 
 interface ConnectInfo {
   chainId: string
+}
+
+interface UploadProgressUpdate {
+  type: "encrypted" | "funded" | "signed" | "uploaded"
+  value: number | boolean
+}
+
+interface DownloadProgressUpdate {
+  type: "downloaded" | "decrypted"
+  value: number
 }
 
 // Initialize
@@ -156,12 +163,14 @@ async function lazyFund(size: Readonly<number>) {
 
 export async function uploadFile(
   file: Readonly<File>,
-  update: (progress: ProgressUpdate) => void,
+  update: (progress: UploadProgressUpdate) => void,
 ): Promise<Readonly<string>> {
   if (state.bundlr === null) throw new Error("Bundlr not initialized")
 
   const tags = [{ name: "Content-Type", value: "application/octet-stream" }]
-  const { data, key } = await encryptFile(file, (progress) => update({ type: "encrypted", value: progress }))
+  const { data, key } = await encryptFile(file, (progress) =>
+    update({ type: "encrypted", value: progress * 100 }),
+  )
 
   await lazyFund(data.length)
   update({ type: "funded", value: true })
@@ -177,13 +186,21 @@ export async function uploadFile(
 
 export async function downloadFile(
   link: Readonly<string>,
+  update: (progress: DownloadProgressUpdate) => void,
 ): Promise<
   Readonly<{ data: Uint8Array; contentType: string; filename: string }>
 > {
   const { id, key } = await decodeLink(link)
+
   const res = await axios.get<Blob>(`https://arweave.net/${id}`, {
     responseType: "blob",
+    onDownloadProgress(e) {
+      update({ type: "downloaded", value: (e.loaded / e.total) * 100 })
+    },
   })
+
   const cipher = new Uint8Array(await res.data.arrayBuffer())
-  return await decryptFile(cipher, key)
+  return await decryptFile(cipher, key, (progress) =>
+    update({ type: "decrypted", value: progress * 100 }),
+  )
 }

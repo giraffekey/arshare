@@ -36,7 +36,9 @@ const DisplayFile = (
         default:
           switch (contentType) {
             case "text/plain":
-              return bytesToString(data).split("\n").map((p) => m("p", p))
+              return bytesToString(data)
+                .split("\n")
+                .map((p) => m("p", p))
             default:
               return m(null)
           }
@@ -47,12 +49,24 @@ const DisplayFile = (
 
 const FilePage = () => {
   const link = m.route.param("link")
+  let downloaded = 0
+  let decrypted = 0
   let data: Uint8Array = null
   let contentType: string = null
   let filename: string = null
 
   const download = async (link: string) => {
-    const file = await downloadFile(link)
+    const file = await downloadFile(link, (progress) => {
+      switch (progress.type) {
+        case "downloaded":
+          downloaded = progress.value
+          break
+        case "decrypted":
+          decrypted = progress.value
+          break
+      }
+      m.redraw()
+    })
     data = file.data
     contentType = file.contentType
     filename = file.filename
@@ -66,7 +80,11 @@ const FilePage = () => {
       return [
         m(Header),
         m("main", [
-          m("h2", { class: "uk-text-default uk-text-center uk-margin-small-top" }, link),
+          m(
+            "h2",
+            { class: "uk-text-default uk-text-center uk-margin-small-top" },
+            link,
+          ),
           data
             ? m("div", { class: "uk-flex uk-flex-column uk-flex-middle" }, [
                 m(DisplayFile, { data, contentType }),
@@ -81,7 +99,37 @@ const FilePage = () => {
                   `Download ${filename}`,
                 ),
               ])
-            : m("p", "Decrypting..."),
+            : [
+                m(
+                  "label",
+                  { class: "uk-flex uk-flex-middle" },
+                  m(
+                    "span",
+                    downloaded === 100 ? "Downloaded" : "Downloading...",
+                  ),
+                  m("progress", {
+                    class:
+                      "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
+                    value: downloaded,
+                    max: 100,
+                  }),
+                ),
+                downloaded === 100 &&
+                  m(
+                    "label",
+                    { class: "uk-flex uk-flex-middle" },
+                    m(
+                      "span",
+                      decrypted === 100 ? "Decrypted" : "Decrypting...",
+                    ),
+                    m("progress", {
+                      class:
+                        "uk-progress uk-flex-1 uk-margin-small-left uk-margin-remove-vertical",
+                      value: decrypted,
+                      max: 100,
+                    }),
+                  ),
+              ],
         ]),
       ]
     },

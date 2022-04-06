@@ -94,7 +94,7 @@ export async function encryptFile(
     update(dataSize / data.length)
   }
 
-  update(100)
+  update(1)
 
   return {
     data: data.slice(0, dataSize),
@@ -105,6 +105,7 @@ export async function encryptFile(
 export async function decryptFile(
   cipher: Readonly<Uint8Array>,
   key: Readonly<Uint8Array>,
+  update: (progress: number) => void,
 ): Promise<
   Readonly<{ data: Uint8Array; contentType: string; filename: string }>
 > {
@@ -112,6 +113,7 @@ export async function decryptFile(
   const sodium = _sodium
 
   const header = cipher.slice(0, headerSize)
+  update(headerSize / cipher.length)
   const state_in = sodium.crypto_secretstream_xchacha20poly1305_init_pull(
     header,
     key,
@@ -125,6 +127,7 @@ export async function decryptFile(
   const contentType = sodium.to_string(
     contentTypeBytes.slice(0, contentTypeBytes.indexOf(0)),
   )
+  update((headerSize + decryptContentTypeSize) / cipher.length)
 
   const filenameBytes = decryptBytes(
     sodium,
@@ -134,6 +137,7 @@ export async function decryptFile(
   const filename = sodium.to_string(
     filenameBytes.slice(0, filenameBytes.indexOf(0)),
   )
+  update(decryptMetadataSize / cipher.length)
 
   const totalChunks = Math.ceil(
     (cipher.length - decryptMetadataSize) / decryptChunkSize,
@@ -150,7 +154,10 @@ export async function decryptFile(
     const chunk = decryptBytes(sodium, state_in, cipher.slice(start, end))
     data.set(chunk, i * encryptChunkSize)
     dataSize += chunk.length
+    update((decryptMetadataSize + dataSize) / cipher.length)
   }
+
+  update(1)
 
   return { data: data.slice(0, dataSize), contentType, filename }
 }
