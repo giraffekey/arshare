@@ -61,11 +61,11 @@ const Upload = (vnode: Vnode<{ file: FileUpload }>) => {
                 ),
               ],
             )
-          : file.failed
+          : file.error
           ? m(
               "p",
               { class: "uk-margin-remove uk-text-danger" },
-              "Failed to upload file",
+              `Failed to upload file: ${file.error}`,
             )
           : [
               m(
@@ -153,7 +153,7 @@ const Home = {
               state.setFileLink(id, link)
               m.redraw()
             } catch (e) {
-              state.setFileFailed(id, true)
+              state.setFileError(id, e.message || JSON.stringify(e))
               m.redraw()
             }
           },

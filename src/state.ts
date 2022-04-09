@@ -6,7 +6,7 @@ export interface FileUpload {
   name: string
   size: number
   date: Date
-  failed: boolean
+  error: string
   progress: {
     encrypted: number
     funded: boolean
@@ -33,8 +33,8 @@ export interface State {
     type: FileProgress,
     value: number | boolean,
   ) => void
-  setFileFailed: (id: number, failed: boolean) => void
   setFileLink: (id: number, link: string) => void
+  setFileError: (id: number, error: string) => void
 }
 
 const State: State = {
@@ -62,7 +62,7 @@ const State: State = {
       name: file.name,
       size: file.size,
       date: new Date(),
-      failed: false,
+      error: null,
       progress: {
         encrypted: 0,
         funded: false,
@@ -75,11 +75,11 @@ const State: State = {
   updateFileProgress(id: number, type: FileProgress, value: number | boolean) {
     State.files[id].progress[type] = value as never
   },
-  setFileFailed(id: number, failed: boolean) {
-    State.files[id].failed = failed
-  },
   setFileLink(id: number, link: string) {
     State.files[id].link = link
+  },
+  setFileError(id: number, error: string) {
+    State.files[id].error = error
   },
 }
 
