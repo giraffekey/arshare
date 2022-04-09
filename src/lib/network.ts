@@ -13,7 +13,6 @@ import {
 import { decryptFile, decodeLink, encryptFile, encodeLink } from "./crypto"
 import { defaultChainId } from "../config"
 import state from "../state"
-// import contractJson from "../../build/contracts/Arshare.json"
 
 // Types
 
@@ -40,8 +39,6 @@ interface DownloadProgressUpdate {
 // Initialize
 
 const provider = new ethers.providers.Web3Provider(window.ethereum, "any")
-
-// const contract = new ethers.Contract("address", contractJson.abi, provider)
 
 let preparing = false
 
