@@ -15,7 +15,10 @@ interface AddEthereumChainParameter {
   iconUrls?: string[]
 }
 
-export const chainIds = <number[]>[1, 3, 4, 5, 42, 137, 80001, 288, 28]
+export const chainIds = <number[]>[//1,
+3, 4, 5, 42, //137,
+80001, //288,
+28]
 
 export const chainNames = <{ [chainId: number]: string }>{
   1: "Ethereum Mainnet",
