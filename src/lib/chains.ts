@@ -138,6 +138,6 @@ export const bundlrCurrencies = <{ [chainId: number]: string }>{
   42: "ethereum",
   137: "matic",
   80001: "matic",
-  288: "boba",
-  28: "boba",
+  288: "boba-eth",
+  28: "boba-eth",
 }

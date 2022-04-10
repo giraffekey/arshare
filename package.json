@@ -9,7 +9,7 @@
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
   },
   "dependencies": {
-    "@bundlr-network/client": "^0.6.4",
+    "@bundlr-network/client": "^0.7.1",
     "@download/blockies": "^1.0.3",
     "ethers": "^5.6.2",
     "filesize": "^8.0.7",
