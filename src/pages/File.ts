@@ -40,7 +40,7 @@ const DisplayFile = (
                 .split("\n")
                 .map((p) => m("p", p))
             default:
-              return m(null)
+              return m("div")
           }
       }
     },
