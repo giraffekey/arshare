@@ -79,10 +79,10 @@ const FilePage = () => {
     view() {
       return [
         m(Header),
-        m("main", [
+        m("main", { class: "uk-padding-medium" }, [
           m(
             "h2",
-            { class: "uk-text-default uk-text-center uk-margin-small-top" },
+            { class: "uk-text-default uk-text-center uk-margin-medium-bottom" },
             link,
           ),
           data
@@ -92,7 +92,7 @@ const FilePage = () => {
                   "a",
                   {
                     class:
-                      "uk-link-text uk-button uk-button-default uk-border-rounded uk-margin-small-vertical",
+                      "uk-link-text uk-button uk-button-primary uk-text-white-important uk-border-rounded uk-margin-medium-top",
                     href: createURL(data, contentType),
                     download: filename,
                   },

@@ -12,9 +12,12 @@ $global-danger-background: darken(#f0506e, 10%);
 
 // UIkit extended
 
-.uk-padding-medium-horizontal {
-  padding-left: $global-medium-gutter;
-  padding-right: $global-medium-gutter;
+.uk-text-white {
+  color: white;
+}
+
+.uk-text-white-important {
+  color: white !important;
 }
 
 .uk-padding-small-vertical {
@@ -22,14 +25,18 @@ $global-danger-background: darken(#f0506e, 10%);
   padding-bottom: $global-small-gutter;
 }
 
+.uk-padding-medium {
+  padding: $global-medium-gutter;
+}
+
+.uk-padding-medium-horizontal {
+  padding-left: $global-medium-gutter;
+  padding-right: $global-medium-gutter;
+}
+
 .uk-margin-remove-vertical {
   margin-top: 0;
   margin-bottom: 0;
-}
-
-.uk-margin-small-vertical {
-  margin-top: $global-small-gutter;
-  margin-bottom: $global-small-gutter;
 }
 
 .uk-margin-xsmall-left {
@@ -46,6 +53,11 @@ $global-danger-background: darken(#f0506e, 10%);
 
 .uk-margin-xsmall-bottom {
   margin-bottom: calc($global-small-margin / 2);
+}
+
+.uk-margin-small-vertical {
+  margin-top: $global-small-gutter;
+  margin-bottom: $global-small-gutter;
 }
 
 // Components

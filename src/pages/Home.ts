@@ -140,7 +140,7 @@ const Home = {
   view() {
     return [
       m(Header),
-      m("main", [
+      m("main", { class: "uk-padding-medium" }, [
         m("input[type=file]", {
           async oninput(e: InputEvent) {
             const file = (e.target as HTMLInputElement).files[0]
