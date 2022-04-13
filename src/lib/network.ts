@@ -51,15 +51,20 @@ provider.getNetwork().then(handleNetwork)
 async function prepareBundlr() {
   if (!preparing) {
     preparing = true
-    const bundlr = new WebBundlr(
-      bundlrRpcs[state.chainId],
-      bundlrCurrencies[state.chainId],
-      provider,
-      { providerUrl: rpcs[state.chainId] },
-    )
-    await bundlr.ready()
-    state.setBundlr(bundlr)
-    preparing = false
+    try {
+      const bundlr = new WebBundlr(
+        bundlrRpcs[state.chainId],
+        bundlrCurrencies[state.chainId],
+        provider,
+        { providerUrl: rpcs[state.chainId] },
+      )
+      await bundlr.ready()
+      state.setBundlr(bundlr)
+      preparing = false
+    } catch (e) {
+      preparing = false
+      throw e
+    } 
   }
 }
 
