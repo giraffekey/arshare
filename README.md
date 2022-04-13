@@ -13,3 +13,14 @@ Decentralized and encrypted file sharing via [Arweave](https://www.arweave.org/)
 - [Polygon Mumbai Testnet](https://mumbai.polygonscan.com/)
 - [Boba Mainnet](https://blockexplorer.boba.network/)
 - [Boba Rinkeby Testnet](https://blockexplorer.rinkeby.boba.network/)
+
+## Future ventures
+
+- QR codes
+- Upload multiple files at a time
+- Upload and create links to folders
+- Support multiple wallets (WalletConnect, Fortmatic, etc)
+- Support all networks supported by Bundlr (Solana, etc)
+- Mobile PWA
+- IndexedDB cache
+- ENS support
